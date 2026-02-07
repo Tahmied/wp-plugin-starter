@@ -34,7 +34,7 @@ register_deactivation_hook(MY_PLUGIN_FILE, ['\MyPlugin\Deactivator', 'deactivate
 // Boot core
 function cart_sheild()
 {
-    $plugin = new \MyPlugin\Core();
+    $plugin = new \Cartcarebd\Cartsheild\Core();
     $plugin->run();
 }
 cart_sheild();
