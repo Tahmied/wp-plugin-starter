@@ -1,5 +1,6 @@
 console.log('running')
 import { createRoot } from "@wordpress/element";
+import './css/index.css';
 
 const App = () => {
     return (
