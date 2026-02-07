@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<ruleset name="MyPluginRules">
+    <rule ref="WordPress-Core" />
+    <rule ref="WordPress-Docs" />
+    <rule ref="WordPress-VIP" />
+    <file>includes</file>
+    <file>admin</file>
+    <file>public</file>
+</ruleset>

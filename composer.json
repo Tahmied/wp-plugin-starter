@@ -1,0 +1,26 @@
+{
+    "name": "cartcarebd/cartsheild",
+    "description": "A plugin for ecom by tahmied",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "Cartcarebd\\Cartsheild\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tahmied Hossain"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.13",
+        "wp-coding-standards/wpcs": "^3.3"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}
