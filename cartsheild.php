@@ -16,25 +16,25 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-// Define constants
-define('MY_PLUGIN_VERSION', '1.0.0');
-define('MY_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('MY_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('MY_PLUGIN_FILE', __FILE__);
+// Define constants (Renamed to be specific to your plugin)
+define('CARTSHEILD_VERSION', '1.0.0');
+define('CARTSHEILD_DIR', plugin_dir_path(__FILE__));
+define('CARTSHEILD_URL', plugin_dir_url(__FILE__));
+define('CARTSHEILD_FILE', __FILE__);
 
 // Composer autoload
-if (file_exists(MY_PLUGIN_DIR . 'vendor/autoload.php')) {
-    require_once MY_PLUGIN_DIR . 'vendor/autoload.php';
+if (file_exists(CARTSHEILD_DIR . 'vendor/autoload.php')) {
+    require_once CARTSHEILD_DIR . 'vendor/autoload.php';
 }
 
-// Activation / deactivation
-register_activation_hook(MY_PLUGIN_FILE, ['\MyPlugin\Activator', 'activate']);
-register_deactivation_hook(MY_PLUGIN_FILE, ['\MyPlugin\Deactivator', 'deactivate']);
+// Activation / deactivation (FIXED NAMESPACES)
+register_activation_hook(CARTSHEILD_FILE, ['\Cartcarebd\Cartsheild\Activator', 'activate']);
+register_deactivation_hook(CARTSHEILD_FILE, ['\Cartcarebd\Cartsheild\Deactivator', 'deactivate']);
 
 // Boot core
-function cart_sheild()
+function run_cart_sheild()
 {
     $plugin = new \Cartcarebd\Cartsheild\Core();
     $plugin->run();
 }
-cart_sheild();
+run_cart_sheild();

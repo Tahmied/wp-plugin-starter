@@ -4,18 +4,18 @@ namespace Cartcarebd\Cartsheild;
 
 use Cartcarebd\Cartsheild\Admin\Admin;
 use Cartcarebd\Cartsheild\Public\FrontEnd;
+use Cartcarebd\Cartsheild\Api\Routes;
 
 class Core
 {
-
     protected Loader $loader;
     protected string $plugin_name;
     protected string $version;
 
     public function __construct()
     {
-        $this->plugin_name = 'my-professional-plugin';
-        $this->version = MY_PLUGIN_VERSION;
+        $this->plugin_name = 'cartsheild'; // Standardized slug
+        $this->version = CARTSHEILD_VERSION; // Updated Constant
         $this->loader = new Loader();
 
         $this->define_admin_hooks();
@@ -26,7 +26,6 @@ class Core
     private function define_admin_hooks()
     {
         $admin = new Admin($this->plugin_name, $this->version);
-        // Use loader to register hooks: pass instance and method name
         $this->loader->add_action('admin_menu', $admin, 'register_menu');
         $this->loader->add_action('admin_enqueue_scripts', $admin, 'enqueue_assets');
     }
@@ -39,8 +38,8 @@ class Core
 
     private function define_rest_api()
     {
-        // Example: hook to rest_api_init to register REST routes (create a class in includes/api)
-        $this->loader->add_action('rest_api_init', new \Cartcarebd\Cartsheild\Api\Routes(), 'register_routes');
+        // Ensure you have created src/Api/Routes.php with correct namespace!
+        $this->loader->add_action('rest_api_init', new Routes(), 'register_routes');
     }
 
     public function run()

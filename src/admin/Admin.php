@@ -11,74 +11,72 @@ class Admin
     {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
+        // Updated action name to match your plugin slug
         add_action('admin_post_cartsheild_save_settings', [$this, 'save_settings']);
     }
 
     public function save_settings()
     {
-
         // Nonce check
         if (
-            ! isset($_POST['my_plugin_nonce']) ||
-            ! wp_verify_nonce(
-                sanitize_text_field(wp_unslash($_POST['my_plugin_nonce'])),
-                'my_plugin_save_action'
-            )
+            ! isset($_POST['cartsheild_nonce']) ||
+            ! wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cartsheild_nonce'])), 'cartsheild_save_action')
         ) {
-            wp_die(esc_html__('Security check failed', 'my-professional-plugin'));
+            wp_die(esc_html__('Security check failed', 'cartsheild'));
         }
 
-        // Permission check
         if (!current_user_can('manage_options')) {
             return;
         }
 
-        // Sanitize
-        $value = isset($_POST['my_option_name'])
-            ? sanitize_text_field(wp_unslash($_POST['my_option_name']))
+        $value = isset($_POST['cartsheild_option_name'])
+            ? sanitize_text_field(wp_unslash($_POST['cartsheild_option_name']))
             : '';
 
-        update_option('my_option_name', $value);
+        update_option('cartsheild_option_name', $value);
 
-        wp_redirect(admin_url('admin.php?page=my-plugin&saved=1'));
+        wp_redirect(admin_url('admin.php?page=cartsheild&saved=1'));
         exit;
     }
-
 
     public function register_menu()
     {
         add_menu_page(
-            'My Plugin',
-            'My Plugin',
+            'CartSheild',
+            'CartSheild',
             'manage_options',
-            'my-plugin',
+            'cartsheild', // Page slug
             [$this, 'render_admin_page'],
-            'dashicons-admin-generic',
+            'dashicons-shield', // Better icon
             56
         );
     }
 
     public function render_admin_page()
     {
+        // Better Practice: In a real app, move this HTML to src/Admin/partials/admin-display.php
 ?>
         <div class="wrap">
-            <h1><?php esc_html_e('My Plugin Settings', 'my-professional-plugin'); ?></h1>
+            <h1><?php esc_html_e('CartSheild Settings', 'cartsheild'); ?></h1>
 
             <?php if (isset($_GET['saved'])) : ?>
                 <div class="updated">
-                    <p>Saved!</p>
+                    <p><?php esc_html_e('Saved!', 'cartsheild'); ?></p>
                 </div>
             <?php endif; ?>
 
             <form method="POST" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
-                <input type="hidden" name="action" value="my_plugin_save_settings">
+                <input type="hidden" name="action" value="cartsheild_save_settings">
+                <?php wp_nonce_field('cartsheild_save_action', 'cartsheild_nonce'); ?>
 
-                <?php wp_nonce_field('my_plugin_save_action', 'my_plugin_nonce'); ?>
-
-                <input
-                    type="text"
-                    name="my_option_name"
-                    value="<?php echo esc_attr(get_option('my_option_name', '')); ?>">
+                <table class="form-table">
+                    <tr>
+                        <th scope="row"><label for="cartsheild_option_name"><?php esc_html_e('Example Setting', 'cartsheild'); ?></label></th>
+                        <td>
+                            <input type="text" id="cartsheild_option_name" name="cartsheild_option_name" value="<?php echo esc_attr(get_option('cartsheild_option_name', '')); ?>" class="regular-text">
+                        </td>
+                    </tr>
+                </table>
 
                 <?php submit_button(); ?>
             </form>
@@ -86,16 +84,14 @@ class Admin
 <?php
     }
 
-
     public function enqueue_assets($hook)
     {
-        // Only load assets on our page
-        if ($hook !== 'toplevel_page_my-plugin') {
+        if ($hook !== 'toplevel_page_cartsheild') {
             return;
         }
 
-        $asset_file = MY_PLUGIN_DIR . 'build/index.asset.php';
-        $script_path = MY_PLUGIN_URL . 'build/index.js';
+        $asset_file = CARTSHEILD_DIR . 'build/index.asset.php';
+        $script_path = CARTSHEILD_URL . 'build/index.js';
 
         if (file_exists($asset_file)) {
             $asset = include $asset_file;
@@ -106,17 +102,7 @@ class Admin
                 $asset['version'],
                 true
             );
-            wp_set_script_translations($this->plugin_name . '-admin', 'my-professional-plugin', MY_PLUGIN_DIR . 'languages');
-
-            // enqueue admin stylesheet if exists
-            if (file_exists(MY_PLUGIN_DIR . 'build/style-index.css')) {
-                wp_enqueue_style(
-                    $this->plugin_name . '-admin-style',
-                    MY_PLUGIN_URL . 'build/style-index.css',
-                    [],
-                    $this->version
-                );
-            }
+            wp_set_script_translations($this->plugin_name . '-admin', 'cartsheild', CARTSHEILD_DIR . 'languages');
         }
     }
 }
