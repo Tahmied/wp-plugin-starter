@@ -1,1 +1,1 @@
-console.log("Plugin admin loaded");
+import './Admin/index';

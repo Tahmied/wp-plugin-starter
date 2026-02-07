@@ -11,32 +11,7 @@ class Admin
     {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
-        // Updated action name to match your plugin slug
-        add_action('admin_post_cartsheild_save_settings', [$this, 'save_settings']);
-    }
-
-    public function save_settings()
-    {
-        // Nonce check
-        if (
-            ! isset($_POST['cartsheild_nonce']) ||
-            ! wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cartsheild_nonce'])), 'cartsheild_save_action')
-        ) {
-            wp_die(esc_html__('Security check failed', 'cartsheild'));
-        }
-
-        if (!current_user_can('manage_options')) {
-            return;
-        }
-
-        $value = isset($_POST['cartsheild_option_name'])
-            ? sanitize_text_field(wp_unslash($_POST['cartsheild_option_name']))
-            : '';
-
-        update_option('cartsheild_option_name', $value);
-
-        wp_redirect(admin_url('admin.php?page=cartsheild&saved=1'));
-        exit;
+        // Note: We removed the 'save_settings' action because React handles data differently
     }
 
     public function register_menu()
@@ -45,64 +20,61 @@ class Admin
             'CartSheild',
             'CartSheild',
             'manage_options',
-            'cartsheild', // Page slug
+            'cartsheild',
             [$this, 'render_admin_page'],
-            'dashicons-shield', // Better icon
+            'dashicons-shield',
             56
         );
     }
 
     public function render_admin_page()
     {
-        // Better Practice: In a real app, move this HTML to src/Admin/partials/admin-display.php
-?>
-        <div class="wrap">
-            <h1><?php esc_html_e('CartSheild Settings', 'cartsheild'); ?></h1>
+        // 1. Output a test message to prove PHP is running
+        echo '<h1>DEBUG MODE: The Container Should Be Below</h1>';
 
-            <?php if (isset($_GET['saved'])) : ?>
-                <div class="updated">
-                    <p><?php esc_html_e('Saved!', 'cartsheild'); ?></p>
-                </div>
-            <?php endif; ?>
+        // 2. Output the React Container
+        echo '<div id="cartsheild-admin-app"></div>';
 
-            <form method="POST" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
-                <input type="hidden" name="action" value="cartsheild_save_settings">
-                <?php wp_nonce_field('cartsheild_save_action', 'cartsheild_nonce'); ?>
-
-                <table class="form-table">
-                    <tr>
-                        <th scope="row"><label for="cartsheild_option_name"><?php esc_html_e('Example Setting', 'cartsheild'); ?></label></th>
-                        <td>
-                            <input type="text" id="cartsheild_option_name" name="cartsheild_option_name" value="<?php echo esc_attr(get_option('cartsheild_option_name', '')); ?>" class="regular-text">
-                        </td>
-                    </tr>
-                </table>
-
-                <?php submit_button(); ?>
-            </form>
-        </div>
-<?php
+        // 3. Output a hidden timestamp so we know if the file updated
+        echo '';
     }
 
     public function enqueue_assets($hook)
     {
-        if ($hook !== 'toplevel_page_cartsheild') {
+        // 1. Safety check
+        $asset_file = CARTSHEILD_DIR . 'build/index.asset.php';
+        if (!file_exists($asset_file)) {
             return;
         }
 
-        $asset_file = CARTSHEILD_DIR . 'build/index.asset.php';
-        $script_path = CARTSHEILD_URL . 'build/index.js';
+        // 2. Include the asset file
+        $asset = include $asset_file;
 
-        if (file_exists($asset_file)) {
-            $asset = include $asset_file;
-            wp_enqueue_script(
-                $this->plugin_name . '-admin',
-                $script_path,
-                $asset['dependencies'],
-                $asset['version'],
-                true
+        // 3. FORCE the dependency manually
+        // We add 'wp-element' (which is WordPress's version of React)
+        // We add 'wp-i18n' (for translations)
+        $dependencies = array_merge($asset['dependencies'], ['wp-element', 'wp-i18n']);
+
+        // 4. Enqueue with the fixed dependencies
+        wp_enqueue_script(
+            'cartsheild-admin-script',
+            CARTSHEILD_URL . 'build/index.js',
+            $dependencies, // <--- USING OUR FORCED LIST
+            $asset['version'],
+            true
+        );
+
+        // 5. Enqueue CSS
+        if (file_exists(CARTSHEILD_DIR . 'build/index.css')) {
+            wp_enqueue_style(
+                'cartsheild-admin-style',
+                CARTSHEILD_URL . 'build/index.css',
+                [],
+                $asset['version']
             );
-            wp_set_script_translations($this->plugin_name . '-admin', 'cartsheild', CARTSHEILD_DIR . 'languages');
         }
+
+        // 6. Load Translations
+        wp_set_script_translations('cartsheild-admin-script', 'cartsheild', CARTSHEILD_DIR . 'languages');
     }
 }

@@ -5,7 +5,7 @@
  * Plugin URI:        https://cartcarebd.com
  * Description:       Production grade plugin skeleton.
  * Version:           1.0.0
- * Requires PHP:      8.1
+ * Requires PHP:      6.0
  * Author:            Tahmied Hossain
  * Text Domain:       cartsheild
  * Domain Path:       /languages
